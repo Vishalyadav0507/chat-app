@@ -4,20 +4,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <title>SignUp page</title>
 </head>
 <body>
-    <div>
+    <div class="card" style="width: 18rem;" >
         <form onsubmit="signUp(event)">
-            <label for="">Name:</label>
-            <input type="text" id="Name">
-            <label for="">Email:</label>
-            <input type="email" id="Email">
-            <label for="">Phone number</label>
-            <input type="number" id="Num">
-            <label for="">Password</label>
-            <input type="password" id="Password">
-            <button>sign up</button>
+            <label for="" class="form-label" >Name:</label>
+            <input type="text" class="form-control" id="Name">
+            <label for="" class="form-label">Email:</label>
+            <input type="email" class="form-control" id="Email">
+            <label for="" class="form-label">Phone number</label>
+            <input type="number" class="form-control" id="Num">
+            <label for="" class="form-label">Password</label>
+            <input type="password" class="form-control" id="Password">
+            <button type="submit" class="btn btn-primary" >sign up</button>
         </form>
     </div>
 </body>

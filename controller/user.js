@@ -22,10 +22,10 @@ const signup = async (req, res, next) => {
                 if (err) {
                     return res.status(401).json({ err: "password did not save" })
                 } else {
-                    await User.create({ Name, Number, Email, Password: hash }).then(response=>{
+                    User.create({ Name, Number, Email, Password: hash }).then(response=>{
                         res.status(201).json({ message: "signup succesfully" })
                     }).catch(err=>{
-                        res.status(401).json({err:"user already exist"})
+                        res.status(404).json({err:"user already exist"})
                     })
                 }
             })

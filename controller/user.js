@@ -1,5 +1,10 @@
 const bcrypt = require('bcrypt')
 const User = require('../model/user')
+const jwt =require("jsonwebtoken")
+
+function generateToken(Name,id,Email){
+   return  jwt.sign({Name:Name,id:id,Email:Email},"somethingforToken")
+}
 
 function stringvalidater(str) {
     if (str == undefined || str.length === 0) {
@@ -35,6 +40,24 @@ const signup = async (req, res, next) => {
     }
 }
 
+
+const login =async(req,res,next)=>{
+    const { Email,Password}=req.body
+    const ValideUser=await User.findAll({where:{Email:Email}})
+    if(ValideUser){
+        bcrypt.compare(Password,ValideUser[0].Password,(err,result)=>{
+            if(result==true){
+                const token=generateToken(ValideUser.Name,ValideUser.id,ValideUser.Email)
+                res.status(201).json({message:"login successfully",token:token})
+            }else{
+                res.status(401).json({err:"password missmatched"})
+            }
+        })
+    }else{
+        res.status(401).json({err:"user does not exists"})
+    }
+}
 module.exports = {
-    signup: signup
+    signup: signup,
+    login:login
 }

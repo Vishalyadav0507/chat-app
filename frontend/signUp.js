@@ -13,6 +13,7 @@ async function signUp(e) {
         console.log(response.status)
         if(response.status==201){
             alert("Successfuly signed up")
+            window.location.href ='login.html'
         }
         else if(response.status==404){
             alert("User already exists, Please Logins")

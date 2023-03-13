@@ -7,8 +7,11 @@ const cors=require('cors')
 const sequelize=require('./util/database')
 const User=require("./model/user")
 const chats=require("./model/chat")
+const group=require("./model/createGroup")
+
 const userRoute=require('./routes/user');
 const chatRoute=require("./routes/chat")
+const groupRoute=require("./routes/group")
 
 const app=express()
 
@@ -21,10 +24,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/user',userRoute)
 app.use('/chat',chatRoute)
+app.use("/group",groupRoute)
 
 User.hasMany(chats)
 chats.belongsTo(User)
 
+User.hasMany(group)
+group.belongsTo(User)
 
 sequelize.sync()
 .then(result=>{

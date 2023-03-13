@@ -45,7 +45,7 @@ const signup = async (req, res, next) => {
 const login =async(req,res,next)=>{
     const { Email,Password}=req.body
     const ValideUser=await User.findAll({where:{Email:Email}})
-    if(ValideUser){
+    if(ValideUser.length>0){
         bcrypt.compare(Password,ValideUser[0].Password,(err,result)=>{
             if(result==true){
                 

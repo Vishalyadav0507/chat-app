@@ -9,7 +9,6 @@ async function login(e) {
         const response = await axios.post("http://localhost:3000/user/login", Data)
         if (response.status === 201) {
             alert("login successfully")
-            console.log(response.data.token)
             localStorage.setItem("token",response.data.token)
             window.location.href="chatPage.html"
         } else {

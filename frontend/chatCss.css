@@ -1,0 +1,32 @@
+.logo{
+    display: block;
+    margin: auto;
+    width: 3rem;
+    padding-bottom: 10px;
+
+}
+body{
+    background-color: rgb(188, 234, 234);
+}
+.container{
+    max-width: 400px;
+    background-color: rgb(143, 247, 247);
+    margin: auto;
+    height:60vh;
+    
+}
+.message {
+    width: 20%;
+    padding: 10px;
+    margin: 17px 12px;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+.right{
+    float: right;
+    clear: both;
+}
+.left{
+    float: left;
+    clear: both;
+}

@@ -3,6 +3,7 @@ const User = require('../model/user')
 const jwt =require("jsonwebtoken")
 
 function generateToken(Name,id,Email){
+    console.log("token",Name,id,Email)
    return  jwt.sign({Name:Name,id:id,Email:Email},"somethingforToken")
 }
 
@@ -47,7 +48,8 @@ const login =async(req,res,next)=>{
     if(ValideUser){
         bcrypt.compare(Password,ValideUser[0].Password,(err,result)=>{
             if(result==true){
-                const token=generateToken(ValideUser.Name,ValideUser.id,ValideUser.Email)
+                
+                const token=generateToken(ValideUser[0].Name,ValideUser[0].id,ValideUser[0].Email)
                 res.status(201).json({message:"login successfully",token:token})
             }else{
                 res.status(401).json({err:"password missmatched"})

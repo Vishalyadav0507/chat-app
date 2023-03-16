@@ -4,26 +4,31 @@ const { Op } = require("sequelize");
 const chat = async (req, res, next) => {
     try {
         const user = req.user
-        const response = await chats.create({ username: user.Name, message: req.body.msz, userId: user.id })
+        const groupid = req.params.id
+
+        const response = await chats.create({
+            username: user.Name, groupId: groupid, message: req.body.msz, userId: user.id
+        })
         if (response) {
             res.status(201).json({ body: response })
         }
     } catch (err) {
-        res.status(401).json({ err: "something went wrong" })
+        console.log(err)
+        res.status(401).json({ err: "message not send" })
     }
 }
 const getchat = async (req, res, next) => {
     try {
-    
-        const lastmsgId = req.params.id || 0
-        console.log("id", lastmsgId)
+
+        const lastmsgId = req.params.id
+
         const message = await chats.findAll(
             {
                 where:
                 {
                     id: {
                         [Op.gt]: lastmsgId   //>sequelize operator [Op:gt]
-                    }
+                    }, groupId: { [Op.eq]: 0 }
                 }
             })
         if (message.length >= 0) {
@@ -37,7 +42,22 @@ const getchat = async (req, res, next) => {
     }
 
 }
+
+const groupchat = async (req, res, next) => {
+    try {
+        const groupid = req.params.groupId
+        const message = await chats.findAll({
+            where: {
+                groupId: groupid
+            }
+        })
+        res.status(201).json({ message: message })
+    } catch (err) {
+        res.status(401).json(err)
+    }
+}
 module.exports = {
     chat: chat,
-    getchat: getchat
+    getchat: getchat,
+    groupchat: groupchat
 }

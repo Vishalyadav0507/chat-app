@@ -7,13 +7,16 @@
 }
 body{
     background-color: rgb(188, 234, 234);
+    
 }
 .container{
-    max-width: 400px;
+    max-width: 1000px;
     background-color: rgb(143, 247, 247);
     margin: auto;
     height:60vh;
-    overflow-y: scroll;
+    overflow-y:scroll ;
+    /* padding-left: 1000px; */
+    
     
 }
 .message {

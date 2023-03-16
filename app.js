@@ -8,6 +8,7 @@ const sequelize=require('./util/database')
 const User=require("./model/user")
 const chats=require("./model/chat")
 const group=require("./model/createGroup")
+const userInGroup=require("./model/userInGroup")
 
 const userRoute=require('./routes/user');
 const chatRoute=require("./routes/chat")
@@ -29,8 +30,10 @@ app.use("/group",groupRoute)
 User.hasMany(chats)
 chats.belongsTo(User)
 
-User.hasMany(group)
-group.belongsTo(User)
+
+User.belongsToMany(group, {through: userInGroup})
+group.belongsToMany(User, {through: userInGroup})
+
 
 sequelize.sync()
 .then(result=>{

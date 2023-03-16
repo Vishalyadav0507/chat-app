@@ -1,0 +1,30 @@
+User.hasMany(chats)
+chats.belongsTo(User)
+
+group.hasMany(chats)
+chats.belongsTo(group)
+
+
+group.hasMany(userInGroup)
+userInGroup.belongsTo(group)
+
+
+
+User.belongsToMany(group, {through: userInGroup})
+group.belongsToMany(User, {through: userInGroup})
+
+
+
+User.hasMany(chats)
+chats.belongsTo(User)
+
+group.hasMany(chats)
+chats.belongsTo(group)
+
+// group.hasMany(userInGroup)
+// userInGroup.belongsTo(group)
+User.hasMany(group)
+group.belongsTo(User)
+
+User.belongsToMany(group, {through: userInGroup})
+group.belongsToMany(User, {through: userInGroup})

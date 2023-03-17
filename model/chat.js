@@ -14,7 +14,7 @@ const chat = sequelize.define("chat", {
     },
     message: Sequelize.STRING,
 
-    groupId: Sequelize.INTEGER
+    // groupId: Sequelize.INTEGER
 })
 
 module.exports = chat

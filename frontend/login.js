@@ -11,6 +11,7 @@ async function login(e) {
             alert("login successfully")
             localStorage.setItem("token",response.data.token)
             window.location.href="chatPage.html"
+            localStorage.setItem("groupid",0)
         } else {
             alert("something went wrong")
         }

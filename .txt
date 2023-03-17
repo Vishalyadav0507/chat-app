@@ -28,3 +28,24 @@ group.belongsTo(User)
 
 User.belongsToMany(group, {through: userInGroup})
 group.belongsToMany(User, {through: userInGroup})
+
+
+<div>
+        <form onsubmit="createGroup(event)">
+            <input type="text" id="groupName">
+            <button " type=" submit">create group</button>
+        </form>
+        <h3>groups</h3>
+        <div id="groups">
+        </div>
+    </div>
+    <div class="container">
+        <div id="message"></div>
+        <div id="msg"></div>
+    </div>
+    <div class="send">
+        <form " onsubmit=" sendmsz(event)">
+            <input type="text" id="msz">
+            <button type="submit">send</button>
+        </form>
+    </div>

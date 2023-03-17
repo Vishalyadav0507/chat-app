@@ -1,3 +1,8 @@
+// import { io } from "socket.io-client"
+// const socket = io('http://localhost:3000');
+
+const token=localStorage.getItem("token")
+
 async function sendmsz(e) {
     try {
         e.preventDefault();
@@ -10,11 +15,11 @@ async function sendmsz(e) {
             const msz = {
                 msz: e.target.msz.value
             }
-            const token = localStorage.getItem("token")
-            const groupid = localStorage.getItem("groupid")?localStorage.getItem("groupid"): 0;
+
+            const groupid = localStorage.getItem("groupid") ? localStorage.getItem("groupid") : 0;
 
             const response = await axios.post(`http://localhost:3000/chat/message/${groupid}`, msz, { headers: { "authentication": token } })
-
+            // socket.emit('send-message', groupid);
             if (response.status === 201) {
                 showOnChatBox(response.data.body.username, response.data.body.message)
             }
@@ -28,22 +33,21 @@ async function sendmsz(e) {
 //    getmsz()
 // },1000)
 
-const groupid=localStorage.getItem("groupid")?localStorage.getItem("groupid"):0;
-if(groupid<0){
-    
+const groupid = localStorage.getItem("groupid") ? localStorage.getItem("groupid") : 0;
+if (groupid <= 0) {
     document.addEventListener("DOMContentLoaded", getmsz)
-}else{
-    document.addEventListener("DOMContentLoaded",groupChat(groupid))
+} else {
+    document.addEventListener("DOMContentLoaded", groupChat(groupid))
 }
 
 
 async function getmsz() {
     try {
-        let lastmsgId = JSON.parse(localStorage.getItem('lastmsgId'))?JSON.parse(localStorage.getItem('lastmsgId')) : 0;
-        const token = localStorage.getItem("token")
+        let lastmsgId = JSON.parse(localStorage.getItem('lastmsgId')) ? JSON.parse(localStorage.getItem('lastmsgId')) : 0;
 
         const responseMsz = await axios.get(`http://localhost:3000/chat/getmessage/${lastmsgId}`, { headers: { "authentication": token } })
         const respMsz = responseMsz.data.message  //chat response
+
 
         lastmsgId += parseInt(respMsz.length);
         let resLength = respMsz.length
@@ -61,18 +65,22 @@ async function getmsz() {
 
         let mergedArray = existingArray.concat(responseArray);
 
-
         localStorage.setItem('lastmsgId', JSON.stringify(lastmsgId));
 
         localStorage.setItem('messages', JSON.stringify(mergedArray));
 
+        const loginId = parseJwt(token).id
+        const messageConainer=document.querySelector('.container')
+        messageConainer.innerHTML=""
+
+        
         for (let i = 0; i < mergedArray.length; i++) {
-            showOnChatBox(mergedArray[i].username, mergedArray[i].message)
+            showOnChatBox(mergedArray[i].username, mergedArray[i].message, loginId, mergedArray[i].userId)
 
         }
         const getGroup = await axios.get("http://localhost:3000/group/get-group", { headers: { "authentication": token } })
         const Groupdata = getGroup.data.response
-        if(Groupdata.length==0){
+        if (Groupdata.length == 0) {
             localStorage.setItem("groupid", 0)
         }
         for (var i = 0; i < Groupdata.length; i++) {
@@ -86,7 +94,7 @@ async function getmsz() {
 
 async function createGroup(e) {
     try {
-        console.log("hii")
+        
         const token = localStorage.getItem("token")
         e.preventDefault();
         const obj = {
@@ -105,8 +113,7 @@ async function createGroup(e) {
 
 async function getUser(groupid) {
     try {
-        const token = localStorage.getItem("token")
-        console.log(groupid)
+
         const allUser = await axios.get("http://localhost:3000/user/get-user", { headers: { "authentication": token } })
         const userDetails = allUser.data.allUser
         for (var i = 0; i < userDetails.length; i++) {
@@ -115,7 +122,9 @@ async function getUser(groupid) {
                 continue
             } else {
                 const parentnode = document.getElementById(groupid)
-                const childnode = `<li id="${userDetails[i].id}">${userDetails[i].Name} <button id="${userDetails[i].id}" onclick="addUser(${userDetails[i].id},${groupid})" >add in group</button></li>`
+                const childnode = `<li styple="padding-top:10px;" id="${userDetails[i].id}">${userDetails[i].Name} 
+                <button class="btn btn-success" id="${userDetails[i].id}" onclick="addUser(${userDetails[i].id},${groupid})">add in group</button>
+                <button class="btn btn-warning" onclick='deleteUser(${userDetails[i].id},${groupid})'>remove User</button></li>`
                 parentnode.innerHTML += childnode
             }
         }
@@ -127,66 +136,133 @@ async function getUser(groupid) {
 
 async function addUser(userid, groupid) {
     try {
-        console.log(groupid)
         
-        const token = localStorage.getItem("token")
-        const response = await axios.get(`http://localhost:3000/group/add-user?userId=${userid}&groupId=${groupid}`, { headers: { "authentication": token } })
-        
-        document.getElementById(userid).style.visibility = "hidden"
+        const response = await axios.get(`http://localhost:3000/group/add-user?userId=${userid}&&groupId=${groupid}`, { headers: { "authentication": token } })
+
+        if(response.status==201){
+            alert("user added")
+        }
 
     } catch (err) {
-        console.log(err)
+        if(err.status==505){{
+            alert("you are not admin of this group")
+        }}else{
+
+            alert(`User already exists`)
+        }
     }
 }
+// socket.on('receive-message',
+
 async function groupChat(groupid) {
-    const token = localStorage.getItem("token")
-    message.innerHTML = ""
+    const loginId = parseJwt(token).id
+    const messageConainer=document.querySelector('.container')
+    messageConainer.innerHTML=""
 
     localStorage.setItem("groupid", groupid)
     const response = await axios.get(`http://localhost:3000/chat/group-chat/${groupid}`, { headers: { "authentication": token } })
     for (var i = 0; i < response.data.message.length; i++) {
-        showOnChatBox(response.data.message[i].username, response.data.message[i].message)
+        showOnChatBox(response.data.message[i].username, response.data.message[i].message,loginId, response.data.message[i].userId)
     }
-    groups.innerHTML=""
+    groups.innerHTML = ""
     const getGroup = await axios.get("http://localhost:3000/group/get-group", { headers: { "authentication": token } })
     const Groupdata = getGroup.data.response
-    if(Groupdata.length==0){
-        localStorage.setItem("groupid", 0)
-    }
+
     for (var i = 0; i < Groupdata.length; i++) {
         showgroup(Groupdata[i])
     }
 }
+// )
 
-async function deleteGroup(groupid){
+async function deleteGroup(groupid) {
+    try {
+        localStorage.setItem("groupid", 0)
+        const response = await axios.delete(`http://localhost:3000/group/delete-group/${groupid}`, { headers: { "authentication": token } })
+        if (response.status == 201) {
+            const parentnode = document.getElementById("groups")
+            const childnode = document.getElementById(groupid)
+            parentnode.removeChild(childnode)
+        }
+    } catch (err) {
+        alert("you are not admin of this group")
+    }
+}
+
+async function deleteUser(userid,groupid){
     try{
-    const token=localStorage.getItem("token")
-    const response= await axios.delete(`http://localhost:3000/group/delete-group/${groupid}`,{ headers: { "authentication": token }})
-    if(response.status==201){
-        const parentnode=document.getElementById("groups")
-        const childnode=document.getElementById(groupid)
-        parentnode.removeChild(childnode)
+    const res=await axios.delete(`http://localhost:3000/group/user-delete?userId=${userid}&&groupId=${groupid}`,{headers:{"authentication":token}})
+
+    if(res.status==201){
+        alert("user successfully deleted")
+    }
+    console.log(res.status)
+    if(res.status==200){
+        alert("you are not admin of this group")
     }
 }catch(err){
-        alert("you are not admin of this group")
+    alert('user not deleted')
+    console.log(err)
 }
+    
 }
+
 
 function exit() {
+    if(localStorage.getItem("groupid")!=0){
     localStorage.setItem("groupid", 0)
-    groups.innerHTML=""
-    message.innerHTML=""
+    groups.innerHTML = ""
+    // message.innerHTML = ""
     getmsz()
+    }
 }
 
-function showOnChatBox(userName, msz) {
-    const parentnode = document.getElementById("message")
-    const childnode = `<p>${userName}:${msz}</p>`
-    parentnode.innerHTML += childnode
+async function sendFile(e){
+    e.preventDefault()
+    const groupid=localStorage.getItem("groupid")
+    const file=document.getElementById('file')
+    const fileData=file.files[0];
+    console.log(file)
+    const formData=new FormData();
+    formData.append('file',fileData);
+    console.log(formData);
+
+    const response=await axios.post("http://localhost:3000/media/sendmedia",{formData,groupid},{headers:{"authentication":token,'Content-Type':'multipart/form-data'}})
+    console.log(response)
+}
+
+
+function showOnChatBox(userName, msz, loginId, userid) {
+    if (loginId == userid) {
+        const messageConainer=document.querySelector('.container')
+        const messageElement=document.createElement('div')
+        messageElement.innerText=`${userName}:${msz}`
+        messageElement.classList.add('right')
+        messageConainer.append(messageElement)
+    } else {
+        const messageConainer=document.querySelector('.container')
+        const messageElement=document.createElement('div')
+        messageElement.innerText=`${userName}:${msz}`
+        messageElement.classList.add('left')
+        messageConainer.append(messageElement)
+    }
 }
 
 function showgroup(resp) {
     const parentnode = document.getElementById('groups')
-    const childnode = `<p id="${resp.id}">${resp.groupname} <button onclick='groupChat(${resp.id})'>chat</button> <button id="addUser" onclick="getUser(${resp.id})" >add user</button><button onclick="deleteGroup(${resp.id})" >delete</button> <button onclick="exit(${resp.id})">exit</button> </p>`
+    const childnode = `<h4 id="${resp.id}">${resp.groupname} 
+    <button class="btn btn-success" onclick='groupChat(${resp.id})'>chat</button> 
+    <button id="addUser" onclick="getUser(${resp.id})" class="btn btn-secondary" >add user</button> 
+    <button onclick="deleteGroup(${resp.id})" class="btn btn-danger" >delete</button> 
+    <button onclick="exit(${resp.id})" class="btn btn-warning">exit</button> </h4>`
     parentnode.innerHTML += childnode
+}
+
+function parseJwt(token){
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
 }

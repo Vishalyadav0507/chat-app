@@ -7,6 +7,10 @@ const Groupinfo = sequelize.define("groupinfo", {
         primaryKey: true,
         autoIncrement: true,
         allowNull: false
+    },
+    groupname:{
+        type:Sequelize.STRING,
+        allowNull: false
     }
 })
 module.exports = Groupinfo

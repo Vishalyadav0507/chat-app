@@ -11,25 +11,23 @@ const postmedia=async(req,res,next)=>{
 
         const fileName = `mediachat${user.id}/${new Date()}.txt`;
 
-        console.log(stringified,"somethinggggg...>",fileName)
-
     
-        // const fileURL = await S3Services.uploadS3(stringified, fileName)
-        // if (groupid==0) {
-        //     const response = await chat.create({
-        //         username: user.Name, message:fileURL , userId: user.id
-        //     })
-        //     if (response) {
-        //         res.status(201).json({ fileURL, success: true })
-        //     }
-        // } else {
-        //     const response = await chat.create({
-        //         username: user.Name, message:fileURL , userId: user.id, groupId: groupid
-        //     })
-        //     if (response) {
-        //         res.status(201).json({ fileURL, success: true })
-        //     }
-        // }
+        const fileURL = await S3Services.uploadS3(stringified, fileName)
+        if (groupid==0) {
+            const response = await chat.create({
+                username: user.Name, message:fileURL , userId: user.id
+            })
+            if (response) {
+                res.status(201).json({ fileURL, success: true })
+            }
+        } else {
+            const response = await chat.create({
+                username: user.Name, message:fileURL , userId: user.id, groupId: groupid
+            })
+            if (response) {
+                res.status(201).json({ fileURL, success: true })
+            }
+        }
     
     } catch (err) {
         res.status(401).json({ success: false, err: err })

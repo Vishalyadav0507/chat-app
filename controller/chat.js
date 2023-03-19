@@ -29,13 +29,13 @@ const getchat = async (req, res, next) => {
     try {
 
         const lastmsgId = req.params.id
-
+        console.log("lastmsz",lastmsgId)
         const message = await chats.findAll(
             {
                 where:
                 {
                     id: {
-                        [Op.gt]: lastmsgId   //>sequelize operator [Op:gt]
+                        [Op.gt]: lastmsgId  
                     },
                      groupId:null
                 }

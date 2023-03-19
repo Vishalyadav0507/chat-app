@@ -6,7 +6,7 @@ const group=require("../controller/group")
 
 router.post("/create-group",auth.authenticate,group.createGroup)
 
-router.get("/get-group",group.getgroup)
+router.get("/get-group",auth.authenticate,group.getgroup)
 
 router.delete("/delete-group/:id",auth.authenticate,group.deleteGroup)
 

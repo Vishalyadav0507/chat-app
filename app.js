@@ -36,7 +36,7 @@ io.on('connection', socket => {
 })
 
 app.use(bodyParser.json({extended:false}))
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'frontend')));
 
 app.use('/user',userRoute)
 app.use('/chat',chatRoute)

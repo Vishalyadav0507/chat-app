@@ -1,13 +1,35 @@
 const express=require('express');
+const app=express()
 const path=require('path')
 
 const bodyParser=require('body-parser')
 const cors=require('cors')
-const io = require('socket.io')(8000);
 
 const dotenv = require('dotenv');
 
 dotenv.config();
+
+app.use(cors());
+
+// const io = require('socket.io')(5000);
+const { Server } = require('socket.io');
+const http = require('http');
+const server = http.createServer(app);
+const io = new Server(server);
+
+// io.on('connection', socket => {
+//     socket.on('send-message', room => {
+//         console.log(room);
+//         io.emit('receive-message', room);
+//     });
+// })
+
+io.on('connection', (socket) => {
+	socket.on('send message', (chat) => {
+		io.emit('send message', (chat));
+	});
+});
+
 
 const sequelize=require('./util/database')
 const User=require("./model/user")
@@ -21,19 +43,7 @@ const chatRoute=require("./routes/chat")
 const groupRoute=require("./routes/group")
 const mediaRoute=require("./routes/media")
 
-const app=express()
 
-app.use(cors({
-    origin: "*",
-})
-)
-
-io.on('connection', socket => {
-    socket.on('send-message', room => {
-        console.log(room);
-        io.emit('receive-message', room);
-    });
-})
 
 app.use(bodyParser.json({extended:false}))
 app.use(express.static(path.join(__dirname, 'frontend')));
@@ -60,7 +70,7 @@ app.use((req,res)=>{
 
 sequelize.sync()
 .then(result=>{
-    app.listen(process.env.PORT || 3000)
+    server.listen(process.env.PORT || 3000)
 })
 .catch(err=>{
     console.log(err)

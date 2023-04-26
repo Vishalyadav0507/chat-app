@@ -5,17 +5,26 @@ const chat = async (req, res, next) => {
     try {
         const user = req.user
         const groupid = req.params.id
-        if (groupid==0) {
-            const response = await chats.create({
-                username: user.Name, message: req.body.msz, userId: user.id
-            })
+        if (groupid == 0) {
+            const response = await chats.create(
+                {
+                    username: user.Name,
+                    message: req.body.msz,
+                    userId: user.id
+                }
+            )
             if (response) {
                 res.status(201).json({ body: response })
             }
         } else {
-            const response = await chats.create({
-                username: user.Name, message: req.body.msz, userId: user.id, groupId: groupid
-            })
+            const response = await chats.create(
+                {
+                    username: user.Name,
+                    message: req.body.msz,
+                    userId: user.id,
+                    groupId: groupid
+                }
+            )
             if (response) {
                 res.status(201).json({ body: response })
             }
@@ -29,15 +38,15 @@ const getchat = async (req, res, next) => {
     try {
 
         const lastmsgId = req.params.id
-        console.log("lastmsz",lastmsgId)
+        console.log("lastmsz", lastmsgId)
         const message = await chats.findAll(
             {
                 where:
                 {
                     id: {
-                        [Op.gt]: lastmsgId  
+                        [Op.gt]: lastmsgId
                     },
-                     groupId:null
+                    groupId: null
                 }
             })
         if (message.length >= 0) {

@@ -143,3 +143,4 @@ module.exports = {
     deleteGroup: deleteGroup,
     deleteUser: deleteUser
 }
+

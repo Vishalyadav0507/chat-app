@@ -3,7 +3,6 @@ const User = require('../model/user')
 const jwt = require("jsonwebtoken")
 
 function generateToken(Name, id, Email) {
-    console.log("token", Name, id, Email)
     return jwt.sign({ Name: Name, id: id, Email: Email }, "somethingforToken")
 }
 
